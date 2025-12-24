@@ -1,203 +1,315 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard - Paddy Doctor</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <style>
-        /* Small styling for the View button and details row */
-        .btn-view {
-            background-color: #3b82f6;
-            color: white;
-            padding: 6px 12px;
-            border-radius: 4px;
-            text-decoration: none;
-            font-weight: bold;
-            font-size: 0.9em;
-            border: none;
-            cursor: pointer;
-            margin-right: 8px;
-        }
-        .btn-view:hover {
-            background-color: #2563eb;
-        }
-        .details-row {
-            background-color: #f8fafc;
-            border-bottom: 2px solid #e2e8f0;
-        }
-        .details-content {
-            padding: 20px;
-            display: flex;
-            gap: 40px;
-        }
-        .details-box {
-            flex: 1;
-        }
-        .details-label {
-            display: block;
-            color: #64748b;
-            font-size: 0.85em;
-            font-weight: bold;
-            text-transform: uppercase;
-            margin-bottom: 8px;
-        }
-    </style>
-    <script>
-        function toggleDetails(id) {
-            var row = document.getElementById('details-' + id);
-            if (row.style.display === 'none') {
-                row.style.display = 'table-row';
-            } else {
-                row.style.display = 'none';
-            }
-        }
-    </script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Dashboard - Paddy Doctor</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+  <style>
+    /* Buttons */
+    .btn-view {
+      background-color: #3b82f6;
+      color: white;
+      padding: 6px 12px;
+      border-radius: 4px;
+      text-decoration: none;
+      font-weight: bold;
+      font-size: 0.9em;
+      border: none;
+      cursor: pointer;
+      margin-right: 8px;
+      display: inline-block;
+    }
+    .btn-view:hover { background-color: #2563eb; }
+
+    .btn-delete { background-color: #ef4444; }
+    .btn-delete:hover { background-color: #dc2626; }
+
+    .details-row {
+      background-color: #f8fafc;
+      border-bottom: 2px solid #e2e8f0;
+    }
+    .details-content {
+      padding: 20px;
+      display: flex;
+      gap: 40px;
+    }
+    .details-box { flex: 1; }
+    .details-label {
+      display: block;
+      color: #64748b;
+      font-size: 0.85em;
+      font-weight: bold;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    /* Tables */
+    table th, table td { vertical-align: top; }
+    code {
+      background: #f1f5f9;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+  </style>
+
+  <script>
+    function toggleDetails(id) {
+      var row = document.getElementById('details-' + id);
+      if (!row) return;
+      row.style.display = (row.style.display === 'none' || row.style.display === '') ? 'table-row' : 'none';
+    }
+  </script>
 </head>
+
 <body>
-    <div class="container" style="max-width: 1000px;">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-            <h1>🛠️ Admin Dashboard</h1>
-            <div style="display: flex; gap: 15px; align-items: center;">
-                <a href="/" target="_blank">View Live Site</a>
-                <a href="/logout" style="color: #ef4444; font-weight: bold; padding: 8px 16px; border: 1px solid #ef4444; border-radius: 6px;">Logout</a>
-            </div>
-        </div>
-        
-        <!-- Flash Messages -->
-        {% with messages = get_flashed_messages() %}
-            {% if messages %}
-                <div class="flash-msg">{{ messages[0] }}</div>
-            {% endif %}
-        {% endwith %}
+  <div class="container" style="max-width: 1000px;">
 
-        <!-- SECTION 1: ADD NEW RULE FORM -->
-        <div class="result-card" style="border-left-color: #2563eb; background: #eff6ff;">
-            <h3 style="color: #1e40af; margin-top: 0;">Add New Disease</h3>
-            <form action="/admin/add" method="POST">
-                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px;">
-                    <!-- Disease Name -->
-                    <div>
-                        <label style="font-size: 0.85em; font-weight: bold; color: #1e40af;">Disease Name</label>
-                        <input type="text" name="name" placeholder="e.g. Sheath Rot" class="input-field" required>
-                    </div>
-                    
-                    <!-- Disease Type -->
-                    <div>
-                        <label style="font-size: 0.85em; font-weight: bold; color: #1e40af;">Type</label>
-                        <select name="type" class="input-field">
-                            <option>Fungal Disease</option>
-                            <option>Bacterial Disease</option>
-                            <option>Viral Disease</option>
-                            <option>Pest Infestation</option>
-                            <option>Nutrient Deficiency</option>
-                        </select>
-                    </div>
-
-                    <!-- Severity -->
-                    <div>
-                        <label style="font-size: 0.85em; font-weight: bold; color: #1e40af;">Severity</label>
-                        <select name="severity" class="input-field">
-                            <option>Low</option>
-                            <option>Medium</option>
-                            <option>High</option>
-                            <option>Critical</option>
-                        </select>
-                    </div>
-                </div>
-                
-                <!-- Management Advice -->
-                <div style="margin-top: 15px;">
-                    <label style="font-size: 0.85em; font-weight: bold; color: #1e40af;">Management Advice</label>
-                    <textarea name="management" placeholder="Enter steps separated by periods..." class="input-field" style="height: 60px; font-family: inherit;" required></textarea>
-                </div>
-                
-                <!-- Symptom Multi-Select -->
-                <div style="margin-top: 15px;">
-                    <label style="font-size: 0.85em; font-weight: bold; color: #1e40af;">
-                        Select Symptoms (Hold Ctrl/Cmd to select multiple)
-                    </label>
-                    <select name="symptoms" multiple class="input-field" style="height: 150px;" required>
-                        {% for s in data.symptoms %}
-                            <option value="{{ s.id }}">{{ s.label }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-
-                <button type="submit" class="btn-analyze" style="background-color: #2563eb; margin-top: 20px;">Save</button>
-            </form>
-        </div>
-
-        <!-- SECTION 2: EXISTING RULES TABLE -->
-        <div style="margin-top: 40px;">
-            <h3>List of Diseases</h3>
-            <div style="overflow-x: auto;">
-                <table style="width: 100%; border-collapse: collapse; background: white; border: 1px solid #e2e8f0;">
-                    <thead>
-                        <tr style="background: #f8fafc;">
-                            <th style="padding: 12px; border-bottom: 2px solid #e2e8f0; text-align: center;">Name</th>
-                            <th style="padding: 12px; border-bottom: 2px solid #e2e8f0; text-align: center;">Type</th>
-                            <th style="padding: 12px; border-bottom: 2px solid #e2e8f0; text-align: center;">Severity</th>
-                            <th style="padding: 12px; border-bottom: 2px solid #e2e8f0; text-align: center;">Symptoms</th>
-                            <th style="padding: 12px; border-bottom: 2px solid #e2e8f0; text-align: center;">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for disease in data.diseases %}
-                        <!-- Main Row -->
-                        <tr style="border-bottom: 1px solid #e2e8f0; text-align: center;">
-                            <td style="padding: 12px; "><strong>{{ disease.name }}</strong></td>
-                            <td style="padding: 12px;">
-                                <span style="font-size: 0.85em; background: #f1f5f9; padding: 2px 6px; border-radius: 4px;">{{ disease.type }}</span>
-                            </td>
-                            <td style="padding: 12px;">{{ disease.severity }}</td>
-                            <td style="padding: 12px;">{{ disease.symptoms|length }} rules</td>
-                            <td style="padding: 12px;">
-                                <!-- View Button (Triggers JS) -->
-                                <button type="button" class="btn-view" onclick="toggleDetails('{{ disease.id }}')">
-                                    View
-                                </button>
-
-                                <!-- Delete Link -->
-                                <button type="button"class="btn-view" href="/admin/delete/{{ disease.id }}" 
-                                   onclick="return confirm('Are you sure you want to delete {{ disease.name }}? This cannot be undone.');"
-                                   style="color: white font-weight: bold; text-decoration: none;">
-                                   Delete
-                                </button>
-                            </td>
-                        </tr>
-
-                        <!-- Hidden Details Row -->
-                        <tr id="details-{{ disease.id }}" class="details-row" style="display: none;">
-                            <td colspan="5">
-                                <div class="details-content">
-                                    <!-- Management Column -->
-                                    <div class="details-box">
-                                        <span class="details-label">Management Advice</span>
-                                        <p style="white-space: pre-wrap; margin-top: 0;">{{ disease.management }}</p>
-                                    </div>
-                                    
-                                    <!-- Symptoms Column -->
-                                    <div class="details-box">
-                                        <span class="details-label">Defined Symptoms</span>
-                                        <ul style="margin-top: 0; padding-left: 20px;">
-                                            {% for sym_id in disease.symptoms %}
-                                                {% for s_ref in data.symptoms %}
-                                                    {% if s_ref.id == sym_id %}
-                                                        <li>{{ s_ref.label }}</li>
-                                                    {% endif %}
-                                                {% endfor %}
-                                            {% endfor %}
-                                        </ul>
-                                    </div>
-                                </div>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        </div>
+    <!-- Header -->
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+      <h1>🛠️ Admin Dashboard</h1>
+      <div style="display:flex; gap:15px; align-items:center;">
+        <a href="/" target="_blank">View Live Site</a>
+        <a href="/logout"
+           style="color:#ef4444; font-weight:bold; padding:8px 16px; border:1px solid #ef4444; border-radius:6px;">
+          Logout
+        </a>
+      </div>
     </div>
+
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <div class="flash-msg">{{ messages[0] }}</div>
+      {% endif %}
+    {% endwith %}
+
+    <!-- SECTION 1: ADD NEW DISEASE FORM -->
+    <div class="result-card" style="border-left-color:#2563eb; background:#eff6ff;">
+      <h3 style="color:#1e40af; margin-top:0;">Add New Disease</h3>
+
+      <form action="/admin/add" method="POST">
+        <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:15px;">
+          <!-- Disease Name -->
+          <div>
+            <label style="font-size:0.85em; font-weight:bold; color:#1e40af;">Disease Name</label>
+            <input type="text" name="name" placeholder="e.g. Sheath Rot" class="input-field" required>
+          </div>
+
+          <!-- Disease Type -->
+          <div>
+            <label style="font-size:0.85em; font-weight:bold; color:#1e40af;">Type</label>
+            <select name="type" class="input-field">
+              <option>Fungal Disease</option>
+              <option>Bacterial Disease</option>
+              <option>Viral Disease</option>
+              <option>Pest Infestation</option>
+              <option>Nutrient Deficiency</option>
+            </select>
+          </div>
+
+          <!-- Severity -->
+          <div>
+            <label style="font-size:0.85em; font-weight:bold; color:#1e40af;">Severity</label>
+            <select name="severity" class="input-field">
+              <option>Low</option>
+              <option>Medium</option>
+              <option>High</option>
+              <option>Critical</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Description -->
+        <div style="margin-top:15px;">
+          <label style="font-size:0.85em; font-weight:bold; color:#1e40af;">Description</label>
+          <textarea name="description" placeholder="Short description..." class="input-field"
+                    style="height: 60px; font-family: inherit;"></textarea>
+        </div>
+
+        <!-- Management Advice -->
+        <div style="margin-top:15px;">
+          <label style="font-size:0.85em; font-weight:bold; color:#1e40af;">Management Advice</label>
+          <textarea name="management"
+                    placeholder="One step per line OR separated by commas"
+                    class="input-field"
+                    style="height: 80px; font-family: inherit;"
+                    required></textarea>
+        </div>
+
+        <!-- Symptom Multi-Select -->
+        <div style="margin-top:15px;">
+          <label style="font-size:0.85em; font-weight:bold; color:#1e40af;">
+            Select Symptoms (Hold Ctrl/Cmd to select multiple)
+          </label>
+          <select name="symptoms" multiple class="input-field" style="height:150px;" required>
+            {% for s in data.symptoms %}
+              <option value="{{ s.id }}">{{ s.label }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <button type="submit" class="btn-analyze" style="background-color:#2563eb; margin-top:20px;">
+          Save Disease
+        </button>
+      </form>
+    </div>
+
+    <!-- SECTION 2: ADD NEW SYMPTOM FORM -->
+    <div class="result-card" style="border-left-color:#10b981; background:#ecfdf5; margin-top:20px;">
+      <h3 style="color:#065f46; margin-top:0;">Add New Symptom</h3>
+
+      <form action="/admin/symptom/add" method="POST">
+        <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px;">
+          <div>
+            <label style="font-size:0.85em; font-weight:bold; color:#065f46;">Category</label>
+            <select name="category" class="input-field" required>
+              <option value="leaf">Leaf</option>
+              <option value="stem">Stem</option>
+              <option value="panicle">Panicle</option>
+              <option value="whole">Whole Plant / General</option>
+            </select>
+          </div>
+
+          <div>
+            <label style="font-size:0.85em; font-weight:bold; color:#065f46;">Symptom ID</label>
+            <input type="text" name="id" class="input-field" placeholder="e.g. leaf_new_symptom" required>
+          </div>
+
+          <div>
+            <label style="font-size:0.85em; font-weight:bold; color:#065f46;">Label</label>
+            <input type="text" name="label" class="input-field" placeholder="e.g. Yellow spots on leaf" required>
+          </div>
+        </div>
+
+        <button type="submit" class="btn-analyze" style="background-color:#10b981; margin-top:15px;">
+          Add Symptom
+        </button>
+      </form>
+    </div>
+
+    <!-- SECTION 3: MANAGE SYMPTOMS TABLE -->
+    <div style="margin-top: 30px;">
+      <h3>Manage Symptoms</h3>
+
+      <div style="overflow-x:auto;">
+        <table style="width:100%; border-collapse:collapse; background:white; border:1px solid #e2e8f0;">
+          <thead>
+            <tr style="background:#f8fafc;">
+              <th style="padding:12px; border-bottom:2px solid #e2e8f0; text-align:left;">Category</th>
+              <th style="padding:12px; border-bottom:2px solid #e2e8f0; text-align:left;">Symptom ID</th>
+              <th style="padding:12px; border-bottom:2px solid #e2e8f0; text-align:left;">Label</th>
+              <th style="padding:12px; border-bottom:2px solid #e2e8f0; text-align:center;">Action</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {% for cat_slug, json_key in category_keys.items() %}
+              {% set items = categorized_symptoms[cat_slug] %}
+              {% for s in items %}
+                <tr style="border-bottom:1px solid #e2e8f0;">
+                  <td style="padding:12px;">{{ cat_slug }}</td>
+                  <td style="padding:12px;"><code>{{ s.id }}</code></td>
+                  <td style="padding:12px;">{{ s.label }}</td>
+                  <td style="padding:12px; text-align:center;">
+                    <a class="btn-view btn-delete"
+                       href="/admin/symptom/delete/{{ s.id }}"
+                       onclick="return confirm('Delete symptom {{ s.id }}? This will fail if used by diseases.');">
+                      Delete
+                    </a>
+                  </td>
+                </tr>
+              {% endfor %}
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      <p style="color:#64748b; font-size:0.9em; margin-top:8px;">
+        Note: You cannot delete a symptom if it is used by any disease rule.
+      </p>
+    </div>
+
+    <!-- SECTION 4: EXISTING DISEASES TABLE -->
+    <div style="margin-top: 40px;">
+      <h3>List of Diseases</h3>
+
+      <div style="overflow-x:auto;">
+        <table style="width:100%; border-collapse:collapse; background:white; border:1px solid #e2e8f0;">
+          <thead>
+            <tr style="background:#f8fafc;">
+              <th style="padding:12px; border-bottom:2px solid #e2e8f0; text-align:center;">Name</th>
+              <th style="padding:12px; border-bottom:2px solid #e2e8f0; text-align:center;">Type</th>
+              <th style="padding:12px; border-bottom:2px solid #e2e8f0; text-align:center;">Severity</th>
+              <th style="padding:12px; border-bottom:2px solid #e2e8f0; text-align:center;">Symptoms</th>
+              <th style="padding:12px; border-bottom:2px solid #e2e8f0; text-align:center;">Actions</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {% for disease in data.diseases %}
+              <!-- Main Row -->
+              <tr style="border-bottom:1px solid #e2e8f0; text-align:center;">
+                <td style="padding:12px;"><strong>{{ disease.name }}</strong></td>
+                <td style="padding:12px;">
+                  <span style="font-size:0.85em; background:#f1f5f9; padding:2px 6px; border-radius:4px;">
+                    {{ disease.type }}
+                  </span>
+                </td>
+                <td style="padding:12px;">{{ disease.severity }}</td>
+                <td style="padding:12px;">{{ disease.symptoms|length }} rules</td>
+                <td style="padding:12px;">
+                  <button type="button" class="btn-view" onclick="toggleDetails('{{ disease.id }}')">View</button>
+
+                  <a class="btn-view btn-delete"
+                     href="/admin/delete/{{ disease.id }}"
+                     onclick="return confirm('Are you sure you want to delete {{ disease.name }}? This cannot be undone.');">
+                    Delete
+                  </a>
+                </td>
+              </tr>
+
+              <!-- Hidden Details Row -->
+              <tr id="details-{{ disease.id }}" class="details-row" style="display:none;">
+                <td colspan="5">
+                  <div class="details-content">
+                    <!-- Management Column -->
+                    <div class="details-box">
+                      <span class="details-label">Management Advice</span>
+
+                      {% if disease.management is string %}
+                        <p style="white-space: pre-wrap; margin-top: 0;">{{ disease.management }}</p>
+                      {% else %}
+                        <ul style="margin-top:0; padding-left:20px;">
+                          {% for m in disease.management %}
+                            <li>{{ m }}</li>
+                          {% endfor %}
+                        </ul>
+                      {% endif %}
+                    </div>
+
+                    <!-- Symptoms Column -->
+                    <div class="details-box">
+                      <span class="details-label">Defined Symptoms</span>
+                      <ul style="margin-top:0; padding-left:20px;">
+                        {% for sym_id in disease.symptoms %}
+                          {% for s_ref in data.symptoms %}
+                            {% if s_ref.id == sym_id %}
+                              <li>{{ s_ref.label }}</li>
+                            {% endif %}
+                          {% endfor %}
+                        {% endfor %}
+                      </ul>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
 </body>
 </html>

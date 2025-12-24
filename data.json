@@ -1,86 +1,167 @@
 {
-  "symptoms": [
-    {"id": "leaf_diamond_lesions", "label": "Diamond/Eye-shaped lesions"},
-    {"id": "leaf_gray_center", "label": "Gray/White centers in spots"},
-    {"id": "leaf_brown_border", "label": "Lesions with brown borders"},
-    {"id": "panicle_neck_rot", "label": "Rot at base of panicle"},
-    {"id": "plant_burnt_appearance", "label": "Burnt appearance of field"},
-    {"id": "leaf_water_soaked_streaks", "label": "Water-soaked streaks"},
-    {"id": "leaf_yellow_margins", "label": "Yellow wavy margins"},
-    {"id": "leaf_ooze", "label": "Milky ooze droplets"},
-    {"id": "leaf_drying_wilt", "label": "Leaves rolling/wilting"},
-    {"id": "leaf_general_yellowing", "label": "General yellowing (Chlorosis)"},
-    {"id": "plant_stunted_growth", "label": "Stunted growth"},
-    {"id": "leaf_small_erect", "label": "Leaves small and erect"},
-    {"id": "stem_dead_heart", "label": "Dead Heart (central shoot dies)"},
-    {"id": "stem_holes_frass", "label": "Holes in stem / Frass"},
-    {"id": "panicle_white_head", "label": "White Head (empty grains)"},
-    {"id": "plant_circular_drying", "label": "Circular drying patches (Hopper burn)"},
-    {"id": "stem_visible_insects", "label": "Insects visible at plant base"},
-    {"id": "plant_sooty_mold", "label": "Sooty mold at base"},
-    {"id": "stem_snake_skin_lesions", "label": "Snake-skin pattern on sheath"},
-    {"id": "stem_irregular_spots", "label": "Irregular gray/green spots"},
-    {"id": "leaf_banding_pattern", "label": "Horizontal banding pattern"},
-    {"id": "leaf_yellow_orange_discoloration", "label": "Yellow/Orange discoloration"},
-    {"id": "leaf_twisted_tips", "label": "Twisted leaf tips"},
-    {"id": "plant_reduced_tillering", "label": "Reduced tillering"}
+  "leaf": [
+    { "id": "leaf_diamond_lesions", "label": "Diamond/Eye-shaped lesions" },
+    { "id": "leaf_gray_center", "label": "Lesions with gray/white centers" },
+    { "id": "leaf_brown_border", "label": "Lesions with brown borders" },
+    { "id": "leaf_water_soaked_streaks", "label": "Water-soaked streaks/stripes" },
+    { "id": "leaf_yellow_orange_margins", "label": "Yellow/Orange wavy margins" },
+    { "id": "leaf_milky_ooze", "label": "Milky ooze (bacterial droplets)" },
+    { "id": "leaf_drying_wilt", "label": "Leaves rolling/wilting" },
+    { "id": "leaf_general_yellowing", "label": "General yellowing (chlorosis)" },
+    { "id": "leaf_small_erect", "label": "Leaves are small and narrow" },
+    { "id": "leaf_yellow_orange_discoloration", "label": "Yellow to orange-red discoloration" },
+    { "id": "leaf_twisted_tips", "label": "Twisted leaf tips" },
+    { "id": "leaf_banding_pattern", "label": "Banding pattern (horizontal)" }
   ],
-  "diseases": [
+  "stem":[
+    {"id": "stem_dead_heart", "label": "Dead Heart (central shoot dies)"},
+    {"id": "stem_holes_frass", "label": "Holes in stem/Frass (powdery waste)"},
+    {"id": "stem_snake_skin_lesions", "label": "Snake-skin pattern lesions"},
+    {"id": "stem_irregular_spots", "label": "Irregular gray/green spots on sheath"},
+    {"id": "stem_visible_insects", "label": "Insects visible at plant base"}
+  ],
+  "panicle":[
+      { "id": "panicle_neck_rot", "label": "Neck Rot (blackening at base of panicle)" },
+      { "id": "panicle_white_head", "label": "White Head (empty, white panicles)" }
+  ],
+ "Whole Plant / General":[
+    { "id": "plant_burnt_appearance", "label": "Burnt appearance of field" },
+    { "id": "plant_stunted_growth", "label": "Stunted growth / Dwarfing" },
+    { "id": "plant_hopper_burn", "label": "Hopper burn (circular drying patches)" },
+    { "id": "plant_sooty_mold", "label": "Sooty mold (black powder) at base"},
+    { "id": "plant_reduced_tillering", "label": "Reduced tillering" }
+ ],
+ "disease":[
     {
       "id": "rice_blast",
-      "name": "Rice Blast",
+      "name": "Rice Blast (Magnaporthe oryzae)",
       "type": "Fungal Disease",
       "severity": "High",
-      "symptoms": ["leaf_diamond_lesions", "leaf_gray_center", "leaf_brown_border", "panicle_neck_rot", "plant_burnt_appearance"],
-      "management": "Use Tricyclazole. Maintain water level (flood field)."
+      "symptoms": [
+        "leaf_diamond_lesions",
+        "leaf_gray_center",
+        "leaf_brown_border",
+        "panicle_neck_rot",
+        "plant_burnt_appearance"
+      ],
+      "description": "Rice blast is one of the most destructive diseases of rice. It causes lesions on leaves, stems, peduncles, panicles, seeds, and roots.",
+      "management": [
+        "Use resistant varieties.",
+        "Avoid excessive nitrogen fertilizer.",
+        "Keep field flooded (blast thrives in dry soil conditions).",
+        "Apply fungicides like Tricyclazole or Isoprothiolane if severe."
+      ]
     },
     {
       "id": "bacterial_leaf_blight",
-      "name": "Bacterial Leaf Blight",
+      "name": "Bacterial Leaf Blight (Xanthomonas oryzae)",
       "type": "Bacterial Disease",
       "severity": "High",
-      "symptoms": ["leaf_water_soaked_streaks", "leaf_yellow_margins", "leaf_ooze", "leaf_drying_wilt"],
-      "management": "Drain field. Avoid Nitrogen. Use Copper fungicides."
+      "symptoms": [
+        "leaf_water_soaked_streaks",
+        "leaf_yellow_orange_margins",
+        "leaf_milky_ooze",
+        "leaf_drying_wilt"
+      ],
+      "description": "Causes wilting of seedlings (Kresek) and yellowing and drying of leaves. The disease creates lesions that start at the leaf margin.",
+      "management": [
+        "Use resistant varieties (most effective).",
+        "Ensure proper field drainage.",
+        "Avoid nitrogen fertilizer during outbreaks.",
+        "Keep fields clean of weeds."
+      ]
+    },
+    {
+      "id": "brown_planthopper",
+      "name": "Brown Planthopper Infestation",
+      "type": "Pest",
+      "severity": "Critical",
+      "symptoms": [
+        "plant_circular_drying",
+        "stem_visible_insects",
+        "plant_hopper_burn",
+        "plant_sooty_mold"
+      ],
+      "description": "Insects suck sap from the base of the rice plant. Severe infestation causes 'hopper burn' where plants turn brown and dry up in circular patches.",
+      "management": [
+        "Drain water from the field for 3-4 days.",
+        "Avoid indiscriminate insecticide use (preserves natural enemies).",
+        "Use light traps to monitor population.",
+        "Apply specific insecticides like Buprofezin or Imidacloprid if threshold is crossed."
+      ]
     },
     {
       "id": "stem_borer",
       "name": "Stem Borer",
-      "type": "Pest Infestation",
+      "type": "Pest",
       "severity": "Medium",
-      "symptoms": ["stem_dead_heart", "panicle_white_head", "stem_holes_frass"],
-      "management": "Clip seedling tips. Install pheromone traps. Apply Cartap Hydrochloride."
-    },
-    {
-      "id": "brown_planthopper",
-      "name": "Brown Planthopper",
-      "type": "Pest Infestation",
-      "severity": "Critical",
-      "symptoms": ["plant_circular_drying", "stem_visible_insects", "plant_sooty_mold"],
-      "management": "Drain water for 3-4 days. Use light traps. Apply Buprofezin."
+      "symptoms": [
+        "stem_dead_heart",
+        "panicle_white_head",
+        "stem_holes_frass"
+      ],
+      "description": "Larvae bore into the stem. In the vegetative stage, the central leaf whorl dies (Dead Heart). In the reproductive stage, panicles remain empty and white (White Head).",
+      "management": [
+        "Clip seedling tips before transplanting.",
+        "Install pheromone traps.",
+        "Biological control using Trichogramma.",
+        "Apply cartap hydrochloride or fipronil granules."
+      ]
     },
     {
       "id": "sheath_blight",
       "name": "Sheath Blight",
       "type": "Fungal Disease",
       "severity": "Medium",
-      "symptoms": ["stem_snake_skin_lesions", "stem_irregular_spots", "leaf_banding_pattern"],
-      "management": "Reduce planting density. Drain field. Apply Azoxystrobin."
+      "symptoms": [
+        "stem_snake_skin_lesions",
+        "stem_irregular_spots",
+        "leaf_banding_pattern"
+      ],
+      "description": "Characterized by oval or irregular greenish-grey spots with a distinct dark brown margin, often resembling a snake skin pattern on the leaf sheath.",
+      "management": [
+        "Plant at reasonable density (avoid overcrowding).",
+        "Balance soil nutrients.",
+        "Drain field to reduce humidity.",
+        "Fungicides: Azoxystrobin or Validamycin."
+      ]
     },
     {
       "id": "nitrogen_deficiency",
       "name": "Nitrogen Deficiency",
       "type": "Nutrient Deficiency",
       "severity": "Low",
-      "symptoms": ["leaf_general_yellowing", "plant_stunted_growth", "leaf_small_erect"],
-      "management": "Apply Urea or Ammonium Sulfate. Use Leaf Color Chart."
+      "symptoms": [
+        "leaf_general_yellowing",
+        "plant_stunted_growth",
+        "leaf_small_erect"
+      ],
+      "description": "Older leaves turn yellowish-green to yellow. The whole field may appear yellowish. Growth is stunted and tillering is reduced.",
+      "management": [
+        "Apply Urea or Ammonium Sulfate.",
+        "Use Leaf Color Chart (LCC) to determine need.",
+        "Incorporate organic manure before planting."
+      ]
     },
     {
       "id": "tungro_virus",
-      "name": "Rice Tungro Virus",
+      "name": "Rice Tungro Disease",
       "type": "Viral Disease",
       "severity": "High",
-      "symptoms": ["plant_stunted_growth", "leaf_yellow_orange_discoloration", "leaf_twisted_tips", "plant_reduced_tillering"],
-      "management": "Control Green Leafhopper vector. Remove infected plants. Synchronize planting."
+      "symptoms": [
+        "plant_stunted_growth",
+        "leaf_yellow_orange_discoloration",
+        "leaf_twisted_tips",
+        "plant_reduced_tillering"
+      ],
+      "description": "Transmitted by Green Leafhoppers. Plants display stunting and distinct yellow to orange-red leaf discoloration.",
+      "management": [
+        "Control Green Leafhopper vectors.",
+        "Rogue out (remove) infected plants immediately.",
+        "Practice synchronous planting in the community.",
+        "Use resistant varieties."
+      ]
     }
   ]
+
 }

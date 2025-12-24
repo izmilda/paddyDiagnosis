@@ -3,152 +3,342 @@ import os
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 
 app = Flask(__name__)
-app.secret_key = 'secret_key_for_session'  # Required for login security (Change this in production)
+app.secret_key = "secret_key_for_session"  # Change in production
+DATA_FILE = "data.json"
 
-DATA_FILE = 'data.json'
+# Your JSON category keys (exactly as in your file)
+CATEGORY_KEYS = {
+    "leaf": "leaf",
+    "stem": "stem",
+    "panicle": "panicle",
+    "whole": "Whole Plant / General"
+}
 
-# --- HELPER FUNCTIONS ---
+TEMPLATE_MAP = {
+    "leaf": "leaf.html",
+    "stem": "stem.html",
+    "panicle": "panicle.html",
+    "whole": "whole.html"
+}
+
+NEXT_STEP = {"leaf": "stem", "stem": "panicle", "panicle": "whole", "whole": None}
+PREV_STEP = {"leaf": None, "stem": "leaf", "panicle": "stem", "whole": "panicle"}
+
+
+# ---------------- HELPERS ----------------
 def load_data():
-    """Reads the JSON file and returns data."""
     if not os.path.exists(DATA_FILE):
-        # Fallback if file is missing
-        return {"diseases": [], "symptoms": []}
-    with open(DATA_FILE, 'r') as f:
+        return {
+            "leaf": [],
+            "stem": [],
+            "panicle": [],
+            "Whole Plant / General": [],
+            "disease": []
+        }
+    with open(DATA_FILE, "r", encoding="utf-8") as f:
         return json.load(f)
 
+
 def save_data(data):
-    """Writes data back to the JSON file."""
-    with open(DATA_FILE, 'w') as f:
-        json.dump(data, f, indent=4)
+    with open(DATA_FILE, "w", encoding="utf-8") as f:
+        json.dump(data, f, indent=2, ensure_ascii=False)
 
-# --- PUBLIC ROUTES ---
 
-@app.route('/')
+def build_all_symptoms(data):
+    """Flatten all symptom categories into one list for admin dropdown & mapping."""
+    all_symptoms = []
+    for key in ["leaf", "stem", "panicle", "Whole Plant / General"]:
+        all_symptoms.extend(data.get(key, []))
+    return all_symptoms
+
+
+def get_selected_set():
+    return set(session.get("selected_symptoms", []))
+
+
+def save_selected_set(selected_set):
+    session["selected_symptoms"] = sorted(selected_set)
+
+
+def get_category_ids(data, category_slug):
+    json_key = CATEGORY_KEYS[category_slug]
+    items = data.get(json_key, [])
+    return {s["id"] for s in items if isinstance(s, dict) and "id" in s}
+
+
+def render_category(category_slug):
+    data = load_data()
+    json_key = CATEGORY_KEYS[category_slug]
+    symptoms_list = data.get(json_key, [])
+    selected = get_selected_set()
+
+    return render_template(
+        TEMPLATE_MAP[category_slug],
+        symptoms_list=symptoms_list,
+        selected_symptoms=selected,
+        next_step=NEXT_STEP.get(category_slug),
+        prev_step=PREV_STEP.get(category_slug),
+    )
+
+
+def find_symptom_location(data, sym_id):
+    """
+    Returns (json_key, index, symptom_obj) if found, else (None, None, None).
+    """
+    for json_key in ["leaf", "stem", "panicle", "Whole Plant / General"]:
+        items = data.get(json_key, [])
+        for i, s in enumerate(items):
+            if isinstance(s, dict) and s.get("id") == sym_id:
+                return json_key, i, s
+    return None, None, None
+
+
+def symptom_used_by_diseases(data, sym_id):
+    """Return list of disease names that reference this symptom id."""
+    used_by = []
+    for d in data.get("disease", []):
+        if sym_id in d.get("symptoms", []):
+            used_by.append(d.get("name", d.get("id", "Unknown disease")))
+    return used_by
+
+
+# ---------------- PUBLIC ROUTES ----------------
+@app.route("/")
 def homepage():
-    return render_template('home.html')
+    return render_template("home.html")
 
-@app.route('/leaf')
+
+@app.route("/leaf")
 def leaf():
-    return render_template('leaf.html')
+    return render_category("leaf")
 
-@app.route('/diagnose', methods=['GET', 'POST'])
+
+@app.route("/stem")
+def stem():
+    return render_category("stem")
+
+
+@app.route("/panicle")
+def panicle():
+    return render_category("panicle")
+
+
+@app.route("/whole")
+def whole():
+    return render_category("whole")
+
+
+@app.route("/update_selection/<category_slug>", methods=["POST"])
+def update_selection(category_slug):
+    if category_slug not in CATEGORY_KEYS:
+        return redirect(url_for("homepage"))
+
+    data = load_data()
+    category_ids = get_category_ids(data, category_slug)
+
+    page_selected = set(request.form.getlist("symptoms"))
+    selected = get_selected_set()
+
+    selected -= category_ids
+    selected |= (page_selected & category_ids)
+
+    save_selected_set(selected)
+
+    next_slug = NEXT_STEP.get(category_slug)
+    return redirect(url_for(next_slug)) if next_slug else redirect(url_for("whole"))
+
+
+@app.route("/diagnose", methods=["GET"])
 def diagnose():
-    """
-    The main diagnosis page. 
-    Handles both showing the form (GET) and processing results (POST).
-    """
     data = load_data()
-    diagnosis = None
-    selected_symptoms = []
-    
-    if request.method == 'POST':
-        # 1. Get user input (list of selected symptom IDs)
-        selected_symptoms = request.form.getlist('symptoms')
-        scores = []
-        
-        # 2. Inference Engine: Loop through all diseases in the Knowledge Base
-        for disease in data['diseases']:
-            # Find matching symptoms (Intersection of User Selection & Disease Rules)
-            matches = [s for s in disease['symptoms'] if s in selected_symptoms]
-            
-            # Calculate Confidence Score %
-            total_rules = len(disease['symptoms'])
-            confidence = (len(matches) / total_rules) * 100 if total_rules > 0 else 0
-            
-            # If there is any match at all, add to results
-            if confidence > 0:
-                disease_copy = disease.copy()
-                disease_copy['confidence'] = round(confidence, 1)
-                disease_copy['match_count'] = len(matches)
-                scores.append(disease_copy)
-        
-        # 3. Sort results: Highest confidence first
-        scores.sort(key=lambda x: x['confidence'], reverse=True)
-        return render_template('result.html', diagnosis=scores)
+    diseases = data.get("disease", [])
+    selected_symptoms = list(get_selected_set())
 
-    return render_template('index.html', symptoms_list=data['symptoms'], diagnosis=diagnosis, selected_symptoms=selected_symptoms)
+    scores = []
+    for dis in diseases:
+        dis_symptoms = dis.get("symptoms", [])
+        matches = [s for s in dis_symptoms if s in selected_symptoms]
 
-# --- ADMIN ROUTES ---
+        total_rules = len(dis_symptoms)
+        confidence = (len(matches) / total_rules) * 100 if total_rules > 0 else 0
 
-@app.route('/login', methods=['GET', 'POST'])
+        if confidence > 0:
+            dis_copy = dis.copy()
+            dis_copy["confidence"] = round(confidence, 1)
+            dis_copy["match_count"] = len(matches)
+            dis_copy["matches"] = matches
+            scores.append(dis_copy)
+
+    scores.sort(key=lambda x: x["confidence"], reverse=True)
+
+    # Optional: auto-clear after diagnosis
+    session.pop("selected_symptoms", None)
+
+    return render_template("result.html", diagnosis=scores, selected_symptoms=selected_symptoms)
+
+
+@app.route("/clear")
+def clear():
+    session.pop("selected_symptoms", None)
+    flash("Selections cleared.")
+    return redirect(url_for("homepage"))
+
+
+# ---------------- ADMIN ROUTES ----------------
+@app.route("/login", methods=["GET", "POST"])
 def login():
-    """Simple Admin Login Page."""
-    if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
-        
-        # Hardcoded credentials for demonstration.
-        # In a real app, use a database and hash the passwords!
-        if username == 'admin' and password == 'paddy123':
-            session['logged_in'] = True
-            return redirect(url_for('admin_dashboard'))
-        else:
-            flash('Invalid Credentials. Please try again.')
-            
-    return render_template('login.html')
+    if request.method == "POST":
+        username = request.form["username"]
+        password = request.form["password"]
+        if username == "admin" and password == "paddy123":
+            session["logged_in"] = True
+            return redirect(url_for("admin_dashboard"))
+        flash("Invalid Credentials. Please try again.")
+    return render_template("login.html")
 
-@app.route('/logout')
+
+@app.route("/logout")
 def logout():
-    session.pop('logged_in', None)
-    return redirect(url_for('home'))
+    session.pop("logged_in", None)
+    return redirect(url_for("homepage"))
 
-@app.route('/admin')
+
+@app.route("/admin")
 def admin_dashboard():
-    """The Dashboard to view and delete rules."""
-    if not session.get('logged_in'):
-        return redirect(url_for('login'))
-    
-    data = load_data()
-    return render_template('admin.html', data=data)
+    if not session.get("logged_in"):
+        return redirect(url_for("login"))
 
-@app.route('/admin/add', methods=['POST'])
-def add_disease():
-    """Handles adding a new disease rule to the JSON file."""
-    if not session.get('logged_in'): 
-        return redirect(url_for('login'))
-    
     data = load_data()
-    
-    # Create a unique ID based on the name (e.g., "Brown Spot" -> "brown_spot")
-    new_id = request.form['name'].strip().lower().replace(' ', '_')
-    
-    # Construct the new rule object
+
+    # Make template-friendly aliases
+    data["symptoms"] = build_all_symptoms(data)
+    data["diseases"] = data.get("disease", [])
+
+    # Also pass categorized symptoms for symptom management table
+    categorized_symptoms = {
+        "leaf": data.get("leaf", []),
+        "stem": data.get("stem", []),
+        "panicle": data.get("panicle", []),
+        "whole": data.get("Whole Plant / General", []),
+    }
+
+    return render_template(
+        "admin.html",
+        data=data,
+        categorized_symptoms=categorized_symptoms,
+        category_keys=CATEGORY_KEYS
+    )
+
+
+@app.route("/admin/add", methods=["POST"])
+def add_disease():
+    if not session.get("logged_in"):
+        return redirect(url_for("login"))
+
+    data = load_data()
+    name = request.form["name"].strip()
+    new_id = name.lower().replace(" ", "_")
+
+    mgmt_raw = request.form.get("management", "").strip()
+    if "\n" in mgmt_raw:
+        management_list = [line.strip() for line in mgmt_raw.splitlines() if line.strip()]
+    else:
+        management_list = [m.strip() for m in mgmt_raw.split(",") if m.strip()]
+
     new_disease = {
         "id": new_id,
-        "name": request.form['name'],
-        "type": request.form['type'],
-        "severity": request.form['severity'],
-        "management": request.form['management'],
-        # request.form.getlist gets ALL selected options from the multi-select box
-        "symptoms": request.form.getlist('symptoms') 
+        "name": name,
+        "type": request.form.get("type", "").strip(),
+        "severity": request.form.get("severity", "").strip(),
+        "description": request.form.get("description", "").strip(),
+        "management": management_list,
+        "symptoms": request.form.getlist("symptoms"),
     }
-    
-    data['diseases'].append(new_disease)
+
+    data.setdefault("disease", []).append(new_disease)
     save_data(data)
-    
-    flash(f"Rule for '{request.form['name']}' added successfully!")
-    return redirect(url_for('admin_dashboard'))
 
-@app.route('/admin/delete/<disease_id>')
+    flash(f"Rule for '{name}' added successfully!")
+    return redirect(url_for("admin_dashboard"))
+
+
+@app.route("/admin/delete/<disease_id>")
 def delete_disease(disease_id):
-    """Handles deleting a rule by ID."""
-    if not session.get('logged_in'): 
-        return redirect(url_for('login'))
-    
-    data = load_data()
-    
-    # Filter: Keep all diseases EXCEPT the one matching disease_id
-    original_count = len(data['diseases'])
-    data['diseases'] = [d for d in data['diseases'] if d['id'] != disease_id]
-    
-    if len(data['diseases']) < original_count:
-        save_data(data)
-        flash('Rule deleted successfully.')
-    else:
-        flash('Error: Rule not found.')
-    
-    return redirect(url_for('admin_dashboard'))
+    if not session.get("logged_in"):
+        return redirect(url_for("login"))
 
-if __name__ == '__main__':
-    # Run the app in debug mode (auto-reloads when you change code)
+    data = load_data()
+    diseases = data.get("disease", [])
+    original_count = len(diseases)
+
+    data["disease"] = [d for d in diseases if d.get("id") != disease_id]
+
+    if len(data["disease"]) < original_count:
+        save_data(data)
+        flash("Rule deleted successfully.")
+    else:
+        flash("Error: Rule not found.")
+
+    return redirect(url_for("admin_dashboard"))
+
+
+# ----------- NEW: SYMPTOM ADMIN (ADD/DELETE) -----------
+@app.route("/admin/symptom/add", methods=["POST"])
+def add_symptom():
+    if not session.get("logged_in"):
+        return redirect(url_for("login"))
+
+    data = load_data()
+
+    category_slug = request.form.get("category", "").strip()
+    sym_id = request.form.get("id", "").strip()
+    label = request.form.get("label", "").strip()
+
+    if category_slug not in CATEGORY_KEYS:
+        flash("Invalid category.")
+        return redirect(url_for("admin_dashboard"))
+
+    if not sym_id or not label:
+        flash("Symptom ID and label are required.")
+        return redirect(url_for("admin_dashboard"))
+
+    # prevent duplicates across ALL categories
+    all_ids = {s.get("id") for s in build_all_symptoms(data) if isinstance(s, dict)}
+    if sym_id in all_ids:
+        flash(f"Symptom ID '{sym_id}' already exists. Use a unique ID.")
+        return redirect(url_for("admin_dashboard"))
+
+    json_key = CATEGORY_KEYS[category_slug]
+    data.setdefault(json_key, []).append({"id": sym_id, "label": label})
+    save_data(data)
+
+    flash(f"Symptom '{label}' added to {category_slug}.")
+    return redirect(url_for("admin_dashboard"))
+
+
+@app.route("/admin/symptom/delete/<sym_id>")
+def delete_symptom(sym_id):
+    if not session.get("logged_in"):
+        return redirect(url_for("login"))
+
+    data = load_data()
+
+    # Block delete if used by any disease
+    used_by = symptom_used_by_diseases(data, sym_id)
+    if used_by:
+        flash(f"Cannot delete '{sym_id}'. It is used by: {', '.join(used_by)}")
+        return redirect(url_for("admin_dashboard"))
+
+    json_key, idx, sym_obj = find_symptom_location(data, sym_id)
+    if json_key is None:
+        flash("Symptom not found.")
+        return redirect(url_for("admin_dashboard"))
+
+    data[json_key].pop(idx)
+    save_data(data)
+    flash(f"Symptom '{sym_id}' deleted successfully.")
+    return redirect(url_for("admin_dashboard"))
+
+
+if __name__ == "__main__":
     app.run(debug=True)
