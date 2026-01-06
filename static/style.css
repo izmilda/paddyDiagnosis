@@ -524,6 +524,7 @@ code {
   border-radius: 4px;
 }
 
+<<<<<<< Updated upstream
 /* =========================================
    HOME PAGE UPGRADE 
    ========================================= */
@@ -810,3 +811,21 @@ code {
   .hero-title { font-size: 2rem; }
 }
 
+=======
+.confidence-box {
+  text-align: center;
+}
+
+.confidence-val {
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.confidence-val.high { color: var(--green-600); }
+.confidence-val.med { color: var(--amber-500); }
+
+.confidence-label {
+  font-size: 0.75rem;
+  color: var(--slate-400);
+}
+>>>>>>> Stashed changes
