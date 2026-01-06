@@ -10,25 +10,96 @@
 <div class="container">
     <h1>Leaf Symptom</h1>
 
-   <form method="POST" action="{{ url_for('update_selection', category_slug='leaf') }}">
-        
-        <!-- Leaf Color -->
-        <div class="symptom-grid">
-             {% for s in symptoms_list %}
-            <label class="symptom-item">
-                <input type="checkbox" name="symptoms" value="{{ s.id }}" {% if s.id in selected_symptoms %}checked{% endif %}>
-                {{ s.label }}
+    <form method="POST" action="{{ url_for('update_selection', category_slug='leaf') }}">
+
+        <div class="symptom-grid symptom-grid--with-images">
+            {% for s in symptoms_list %}
+            {% set img_path = 'images/leaf/' ~ s.id ~ '.jpg' %}
+
+            <label class="symptom-card">
+                <input
+                    class="symptom-check"
+                    type="checkbox"
+                    name="symptoms"
+                    value="{{ s.id }}"
+                    {% if s.id in selected_symptoms %}checked{% endif %}
+                >
+
+                <div class="symptom-card__content">
+                    <!-- Image preview (click image to zoom only) -->
+                    <div class="symptom-card__thumb"
+                         role="button"
+                         tabindex="0"
+                         data-full="{{ url_for('static', filename=img_path) }}"
+                         aria-label="Open image preview">
+                        <img
+                            src="{{ url_for('static', filename=img_path) }}"
+                            alt="{{ s.label }}"
+                            loading="lazy"
+                        >
+                    </div>
+
+                    <div class="symptom-card__text">
+                        <span class="symptom-card__label">{{ s.label }}</span>
+                    </div>
+                </div>
             </label>
             {% endfor %}
         </div>
-     
-        <button type="submit" class="btn-analyze">
-            Next
-        </button>
-        
 
+        <button type="submit" class="btn-analyze">Next</button>
     </form>
 </div>
+
+<!-- Image Modal (Zoom) -->
+<div class="img-modal" id="imgModal" aria-hidden="true">
+    <div class="img-modal__backdrop" data-close="1"></div>
+    <div class="img-modal__panel" role="dialog" aria-modal="true">
+        <button class="img-modal__close" type="button" data-close="1">✕</button>
+        <img class="img-modal__img" id="imgModalTarget" src="" alt="Symptom preview">
+    </div>
+</div>
+
+<script>
+(function () {
+    const modal = document.getElementById("imgModal");
+    const target = document.getElementById("imgModalTarget");
+
+    function openModal(src) {
+        target.src = src;
+        modal.classList.add("is-open");
+        modal.setAttribute("aria-hidden", "false");
+        document.body.style.overflow = "hidden";
+    }
+
+    function closeModal() {
+        modal.classList.remove("is-open");
+        modal.setAttribute("aria-hidden", "true");
+        target.src = "";
+        document.body.style.overflow = "";
+    }
+
+    document.addEventListener("click", function (e) {
+        const thumb = e.target.closest(".symptom-card__thumb");
+        if (thumb) {
+            e.preventDefault();
+            e.stopPropagation();
+            openModal(thumb.dataset.full);
+            return;
+        }
+
+        if (e.target.closest("[data-close='1']")) {
+            closeModal();
+        }
+    });
+
+    document.addEventListener("keydown", function (e) {
+        if (e.key === "Escape" && modal.classList.contains("is-open")) {
+            closeModal();
+        }
+    });
+})();
+</script>
 
 </body>
 </html>
