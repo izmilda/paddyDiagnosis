@@ -151,17 +151,36 @@ def diagnose():
     data = load_data()
     diseases = data.get("disease", [])
     selected_symptoms = list(get_selected_set())
+    selected_set = set(selected_symptoms)
 
     scores = []
     for dis in diseases:
         dis_symptoms = dis.get("symptoms", [])
-        matches = [s for s in dis_symptoms if s in selected_symptoms]
+        if not dis_symptoms:
+            continue
 
-        if matches:  # only show diseases with at least one match
-            dis_copy = dis.copy()
-            dis_copy["match_count"] = len(matches)
-            dis_copy["matches"] = matches
-            scores.append(dis_copy)
+        logic = dis.get("logic", "OR").upper()
+        matches = [s for s in dis_symptoms if s in selected_set]
+
+        if logic == "AND":
+            rule_pass = set(dis_symptoms).issubset(selected_set)
+        
+        else:
+            rule_pass = len(matches) > 0
+        
+        if not rule_pass:
+            continue
+    
+
+        confidence = round((len(matches) / len(dis_symptoms)) * 100, 2)
+
+        
+        dis_copy = dis.copy()
+        dis_copy["match_count"] = len(matches)
+        dis_copy["matches"] = matches
+        dis_copy["confidence"] = confidence
+        dis_copy["logic"] = logic
+        scores.append(dis_copy)
 
     # Sort by number of matches (highest first)
     scores.sort(key=lambda x: x["match_count"], reverse=True)

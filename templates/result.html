@@ -40,7 +40,12 @@
                                 <h3 class="disease-title">{{ top_match.name }}</h3>
                                 <p class="disease-type">{{ top_match.type }}</p>
                             </div>
-                           
+                            <div class="confidence-box">
+                                <div class="confidence-val {{ 'high' if top_match.confidence > 70 else 'med' }}">
+                                    {{ top_match.confidence|round|int }}%
+                                </div>
+                                <div class="confidence-label">Probability</div>
+                            </div>
                         </div>
                     </div>
 
@@ -87,6 +92,7 @@
                                 <h5 class="secondary-name">{{ match.name }}</h5>
                                 <p class="secondary-type">{{ match.type }}</p>
                             </div>
+                             <div class="secondary-score">{{ match.confidence|round|int }}%</div>
                         </div>
                         {% endfor %}
                     </div>
@@ -101,7 +107,7 @@
                 <h3 class="alert-title">No clear match found</h3>
                 <p class="alert-text">The selected symptoms do not strongly match any specific disease in our database. Please consult a local agricultural officer.</p>
                 <br>
-                <a href="/diagnose" class="btn-reset" style="justify-content: center;">Try Again</a>
+                <a href="/" class="btn-reset" style="justify-content: center;">Try Again</a>
             </div>
         {% endif %}
 

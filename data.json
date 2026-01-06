@@ -37,6 +37,7 @@
       "name": "Rice Blast (Magnaporthe oryzae)",
       "type": "Fungal Disease",
       "severity": "High",
+      "logic": "OR",
       "symptoms": [
         "leaf_diamond_lesions",
         "leaf_gray_center",
@@ -57,6 +58,7 @@
       "name": "Bacterial Leaf Blight (Xanthomonas oryzae)",
       "type": "Bacterial Disease",
       "severity": "High",
+      "logic": "OR",
       "symptoms": [
         "leaf_water_soaked_streaks",
         "leaf_yellow_orange_margins",
@@ -76,6 +78,7 @@
       "name": "Brown Planthopper Infestation",
       "type": "Pest",
       "severity": "Critical",
+      "logic": "OR",
       "symptoms": [
         "plant_circular_drying",
         "stem_visible_insects",
@@ -95,6 +98,7 @@
       "name": "Stem Borer",
       "type": "Pest",
       "severity": "Medium",
+      "logic": "OR",
       "symptoms": [
         "stem_dead_heart",
         "panicle_white_head",
@@ -113,6 +117,7 @@
       "name": "Sheath Blight",
       "type": "Fungal Disease",
       "severity": "Medium",
+      "logic": "OR",
       "symptoms": [
         "stem_snake_skin_lesions",
         "stem_irregular_spots",
@@ -131,6 +136,7 @@
       "name": "Nitrogen Deficiency",
       "type": "Nutrient Deficiency",
       "severity": "Low",
+      "logic": "OR",
       "symptoms": [
         "leaf_general_yellowing",
         "plant_stunted_growth",
@@ -148,6 +154,7 @@
       "name": "Rice Tungro Disease",
       "type": "Viral Disease",
       "severity": "High",
+      "logic": "OR",
       "symptoms": [
         "plant_stunted_growth",
         "leaf_yellow_orange_discoloration",
