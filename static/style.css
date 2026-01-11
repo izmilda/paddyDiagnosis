@@ -10,6 +10,9 @@ body {
   align-items: flex-start;
   min-height: 100vh;
 }
+html, body{
+  overflow-x: hidden;
+}
 
 
 .container {
@@ -643,6 +646,155 @@ code {
   justify-content: center;
   flex-wrap: wrap;
 }
+/* ===== HERO SPLIT LAYOUT ===== */
+.hero-split{
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  gap: 28px;
+  align-items: center;
+}
+
+/* Left column just holds your existing hero text */
+.hero-left{
+  min-width: 0;
+}
+
+/* Right column image area */
+.hero-right{
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+
+.hero-image-card{
+  position: relative;
+  width: 100%;
+  max-width: 420px;
+  border-radius: 4px;
+  overflow: hidden;
+  border: 1px solid rgba(226,232,240,0.9);
+  background: rgba(255,255,255,0.75);
+  box-shadow: 0 18px 50px rgba(15, 23, 42, 0.14);
+}
+
+/* Actual image */
+.hero-image{
+  display: block;
+  width: 100%;
+  height: 360px;
+  object-fit: cover;
+}
+
+/* Soft glow behind image */
+.hero-image-glow{
+  position: absolute;
+  inset: -40px;
+  z-index: -1;
+  filter: blur(28px);
+  opacity: 0.7;
+  background: radial-gradient(circle at 30% 30%, rgba(34,197,94,0.35), transparent 55%),
+              radial-gradient(circle at 70% 70%, rgba(16,185,129,0.28), transparent 55%);
+}
+
+/* Small labels under image */
+.hero-mini-badges{
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+}
+
+.mini-badge{
+  font-size: 0.85rem;
+  padding: 8px 10px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.7);
+  border: 1px solid rgba(226,232,240,0.9);
+  box-shadow: 0 10px 25px rgba(15, 23, 42, 0.06);
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 900px){
+  .hero-split{
+    grid-template-columns: 1fr;
+  }
+  .hero-right{
+    order: 2;
+  }
+  .hero-image{
+    height: 280px;
+  }
+}
+/* ===== TOP NAV HEADER ===== */
+
+.top-nav{
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 9999;
+  overflow-x: hidden;
+
+  background: rgba(255,255,255,0.55);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+
+  border-bottom: 1px solid rgba(226,232,240,0.8);
+}
+
+
+.top-nav-inner{
+  width: 100%;
+  padding: 20px 1px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+
+/* Logo */
+.nav-logo{
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 800;
+  font-size: 1.05rem;
+  color: #14532d;
+}
+
+.nav-icon{
+  font-size: 1.4rem;
+}
+
+/* Admin Login button */
+.nav-login-btn{
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 700;
+  padding: 8px 14px;
+  border-radius: 999px;
+
+  color: #14532d;
+  background: rgba(255,255,255,0.7);
+  border: 1px solid rgba(34,197,94,0.35);
+
+  transition: 0.2s ease;
+}
+
+.nav-login-btn:hover{
+  background: rgba(34,197,94,0.12);
+  transform: translateY(-1px);
+}
+
+/* IMPORTANT: prevent content from hiding under fixed header */
+.home-container{
+  padding-top: 74px;
+}
+
+
 
 .btn-primary, .btn-secondary {
   display: inline-flex;
@@ -896,7 +1048,7 @@ code {
 /* Image box */
 .symptom-media {
   width: 110px;
-  height: 90px;
+  height: 100px;
   border-radius: 9px;
   overflow: hidden;
   border: 1px solid #e2e8f0;
