@@ -136,6 +136,33 @@ def symptom_used_by_diseases(data, sym_id):
 
 
 # ---------------- PUBLIC ROUTES ----------------
+@app.route("/start-diagnosis")
+def start_diagnosis():
+    # optional: clear any previous selections when starting fresh
+    session.pop("selected_symptoms", None)
+    session.pop("diag_mode", None)
+    return render_template("diagnosis_mode.html")
+
+
+@app.route("/set-mode/<mode>")
+def set_mode(mode):
+    # store mode if you want (optional)
+    session["diag_mode"] = mode
+
+    # clear selections when switching mode
+    session.pop("selected_symptoms", None)
+
+    # Single-category modes: go straight to that page
+    if mode in ["leaf", "stem", "panicle", "whole"]:
+        return redirect(url_for(mode))  # uses your existing routes: leaf(), stem(), panicle(), whole()
+
+    # Multi = your original flow starts at leaf
+    if mode == "multi":
+        return redirect(url_for("leaf"))
+
+    # fallback
+    return redirect(url_for("start_diagnosis"))
+
 @app.route("/")
 def homepage():
     return render_template("home.html")
@@ -195,7 +222,8 @@ def diagnose():
             continue
 
         logic = dis.get("logic", "OR").upper()
-        matches = [s for s in dis_symptoms if s in selected_set]
+        matches = [s for s in dis_symptoms if s['id'] in selected_set]
+
 
         if logic == "AND":
             rule_pass = set(dis_symptoms).issubset(selected_set)
@@ -486,6 +514,22 @@ def update_symptom():
     save_data(data)
     flash(f"Symptom '{old_id}' updated.")
     return redirect(url_for("admin_dashboard"))
+
+@app.route("/leaf_only", methods=["GET", "POST"])
+def leaf_only():
+    data = load_data()
+    json_key = "leaf"
+    symptoms_list = data.get(json_key, [])
+    selected = get_selected_set()
+
+    return render_template(
+        "leaf_only.html",  # New template for "Leaf Only"
+        symptoms_list=symptoms_list,
+        selected_symptoms=selected,
+        next_step=None,  # There is no "next" step
+        prev_step="diagnosis_mode"  # You can navigate back to diagnosis mode
+    )
+
 
 
 if __name__ == "__main__":

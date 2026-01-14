@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Choose Diagnosis Mode | Paddy Doctor</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <style>
+    .mode-wrap{
+      max-width: 1050px;
+      margin: 0 auto;
+      padding: 26px 18px 40px;
+    }
+    .mode-header{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:12px;
+      margin-bottom:18px;
+    }
+    .mode-header h1{ margin:0; font-size:2rem; }
+    .mode-header p{ margin:8px 0 0; color:#475569; }
+
+    .mode-grid{
+      display:grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap:14px;
+      margin-top:16px;
+    }
+    @media (max-width: 900px){
+      .mode-grid{ grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 560px){
+      .mode-grid{ grid-template-columns: 1fr; }
+    }
+
+    .mode-card{
+      background: rgba(255,255,255,0.92);
+      border: 1px solid #e2e8f0;
+      border-radius: 16px;
+      padding: 16px;
+      box-shadow: 0 10px 28px rgba(15, 23, 42, 0.06);
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+    .mode-top{
+      display:flex;
+      align-items:center;
+      gap:10px;
+    }
+    .mode-icon{
+      width:44px;
+      height:44px;
+      border-radius:12px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background: #ecfdf5;
+      border: 1px solid #d1fae5;
+      font-size: 20px;
+    }
+    .mode-title{
+      font-weight: 800;
+      font-size: 1.05rem;
+      margin:0;
+    }
+    .mode-desc{
+      margin:0;
+      color:#475569;
+      font-size:0.95rem;
+      line-height:1.35;
+    }
+    .mode-actions{
+      margin-top:8px;
+      display:flex;
+      gap:10px;
+      align-items:center;
+      justify-content:flex-end;
+    }
+    .btn-mode{
+      border:none;
+      cursor:pointer;
+      padding:10px 14px;
+      border-radius: 12px;
+      font-weight: 800;
+      text-decoration:none;
+      display:inline-flex;
+      gap:8px;
+      align-items:center;
+    }
+    .btn-go{
+      background: linear-gradient(135deg, #166534, #16a34a);
+      color:white;
+    }
+    .btn-back{
+      background: #f1f5f9;
+      color:#0f172a;
+      border:1px solid #e2e8f0;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="mode-wrap">
+
+    <div class="mode-header">
+      <div>
+        <h1>Choose affected plant part</h1>
+        <p>Select one option to start symptom selection. If multiple parts are affected, choose <b>More than one</b>.</p>
+      </div>
+
+      <div class="mode-actions">
+        <a class="btn-mode btn-back" href="/">← Back</a>
+      </div>
+    </div>
+
+    <div class="mode-grid">
+
+      <!-- Leaf -->
+      <div class="mode-card">
+        <div class="mode-top">
+          <div class="mode-icon">🍃</div>
+          <p class="mode-title">Leaf only</p>
+        </div>
+        <p class="mode-desc">Lesions, discoloration, streaks, yellowing on leaves.</p>
+        <div class="mode-actions">
+         <a class="btn-mode btn-go" href="{{ url_for('leaf_only') }}">Start →</a>
+        </div>
+      </div>
+
+      <!-- Stem -->
+      <div class="mode-card">
+        <div class="mode-top">
+          <div class="mode-icon">🌿</div>
+          <p class="mode-title">Stem only</p>
+        </div>
+        <p class="mode-desc">Dead heart, holes/frass, insects at plant base.</p>
+        <div class="mode-actions">
+          <a class="btn-mode btn-go" href="{{ url_for('set_mode', mode='stem') }}">Start →</a>
+        </div>
+      </div>
+
+      <!-- Panicle -->
+      <div class="mode-card">
+        <div class="mode-top">
+          <div class="mode-icon">🌾</div>
+          <p class="mode-title">Panicle only</p>
+        </div>
+        <p class="mode-desc">Neck rot, white head, empty/white panicles.</p>
+        <div class="mode-actions">
+          <a class="btn-mode btn-go" href="{{ url_for('set_mode', mode='panicle') }}">Start →</a>
+        </div>
+      </div>
+
+      <!-- Whole/general -->
+      <div class="mode-card">
+        <div class="mode-top">
+          <div class="mode-icon">🌱</div>
+          <p class="mode-title">Whole plant / General</p>
+        </div>
+        <p class="mode-desc">Stunted growth, burnt appearance, reduced tillering.</p>
+        <div class="mode-actions">
+          <a class="btn-mode btn-go" href="{{ url_for('set_mode', mode='whole') }}">Start →</a>
+        </div>
+      </div>
+
+      <!-- Multi (your original flow) -->
+      <div class="mode-card" style="border-color:#bbf7d0;">
+        <div class="mode-top">
+          <div class="mode-icon" style="background:#dcfce7;border-color:#bbf7d0;">🔁</div>
+          <p class="mode-title">More than one (recommended)</p>
+        </div>
+        <p class="mode-desc">Use the full step-by-step flow: Leaf → Stem → Panicle → Whole → Diagnose.</p>
+        <div class="mode-actions">
+          <a class="btn-mode btn-go" href="{{ url_for('set_mode', mode='multi') }}">Start →</a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</body>
+</html>

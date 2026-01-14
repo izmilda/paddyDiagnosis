@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Leaf Symptom Diagnosis</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<div class="container">
+    <h1>Leaf Symptom</h1>
+
+   <form method="POST" action="{{ url_for('diagnose') }}">
+        
+        <!-- Leaf Symptoms -->
+        <div class="symptom-grid">
+            {% for s in symptoms_list %}
+            <label class="symptom-item symptom-card">
+                <input type="checkbox" name="symptoms" value="{{ s.id }}"
+                       {% if s.id in selected_symptoms %}checked{% endif %}>
+
+                <div class="symptom-content">
+                    <div class="symptom-label">{{ s.label }}</div>
+                    <div class="symptom-sub">Tap to select</div>
+                </div>
+
+                <div class="symptom-media">
+                    <img src="{{ url_for('static', filename=s.img) }}"
+                         alt="{{ s.label }}"
+                         onerror="this.style.display='none'">
+                </div>
+            </label>
+            {% endfor %}
+        </div>
+
+        <div class="nav-buttons">
+            <a class="btn-back" href="{{ url_for('homepage') }}">Back</a>
+            <button type="submit" class="btn-analyze">Diagnose</button>  <!-- Corrected button -->
+        </div>
+        
+    </form>
+</div>
+
+</body>
+</html>

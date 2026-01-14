@@ -173,66 +173,72 @@
             </tr>
           </thead>
 
-          <tbody>
-            {% for disease in data.diseases %}
-              <!-- Main Row -->
-              <tr style="border-bottom:1px solid #e2e8f0; text-align:center;">
-                <td style="padding:12px;"><strong>{{ disease.name }}</strong></td>
-                <td style="padding:12px;">
-                  <span style="font-size:0.85em; background:#f1f5f9; padding:2px 6px; border-radius:4px;">
-                    {{ disease.type }}
-                  </span>
-                </td>
-                <td style="padding:12px;">{{ disease.severity }}</td>
-                <td style="padding:12px;">{{ disease.symptoms|length }} symptoms</td>
-                <td style="padding:12px;">
-                  <button type="button" class="btn-view" onclick="toggleDetails('{{ disease.id }}')">View</button>
+         <tbody>
+  {% for disease in data.diseases %}
+    <!-- Main Row -->
+    <tr style="border-bottom:1px solid #e2e8f0; text-align:center;">
+      <td style="padding:12px;"><strong>{{ disease.name }}</strong></td>
+      <td style="padding:12px;">
+        <span style="font-size:0.85em; background:#f1f5f9; padding:2px 6px; border-radius:4px;">
+          {{ disease.type }}
+        </span>
+      </td>
+      <td style="padding:12px;">{{ disease.severity }}</td>
+      <td style="padding:12px;">
+        {{ disease.symptoms|length }} symptoms
+      </td>
+      <td style="padding:12px;">
+        <button type="button" class="btn-view" onclick="toggleDetails('{{ disease.id }}')">View</button>
 
-                  <a class="btn-view btn-delete"
-                     href="/admin/delete/{{ disease.id }}"
-                     onclick="return confirm('Are you sure you want to delete {{ disease.name }}? This cannot be undone.');">
-                    Delete
-                  </a>
-                </td>
-              </tr>
+        <a class="btn-view btn-delete"
+           href="/admin/delete/{{ disease.id }}"
+           onclick="return confirm('Are you sure you want to delete {{ disease.name }}? This cannot be undone.');">
+          Delete
+        </a>
+      </td>
+    </tr>
 
-              <!-- Hidden Details Row -->
-              <tr id="details-{{ disease.id }}" class="details-row" style="display:none;">
-                <td colspan="5">
-                  <div class="details-content">
-                    <!-- Management Column -->
-                    <div class="details-box">
-                      <span class="details-label">Management Advice</span>
+    <!-- Hidden Details Row -->
+    <tr id="details-{{ disease.id }}" class="details-row" style="display:none;">
+      <td colspan="5">
+        <div class="details-content">
+          <!-- Management Column -->
+          <div class="details-box">
+            <span class="details-label">Management Advice</span>
+            {% if disease.management is string %}
+              <p style="white-space: pre-wrap; margin-top: 0;">{{ disease.management }}</p>
+            {% else %}
+              <ul style="margin-top:0; padding-left:20px;">
+                {% for m in disease.management %}
+                  <li>{{ m }}</li>
+                {% endfor %}
+              </ul>
+            {% endif %}
+          </div>
 
-                      {% if disease.management is string %}
-                        <p style="white-space: pre-wrap; margin-top: 0;">{{ disease.management }}</p>
-                      {% else %}
-                        <ul style="margin-top:0; padding-left:20px;">
-                          {% for m in disease.management %}
-                            <li>{{ m }}</li>
-                          {% endfor %}
-                        </ul>
-                      {% endif %}
-                    </div>
+          <!-- Symptoms Column -->
+          <div class="details-box">
+            <span class="details-label">Defined Symptoms</span>
+            <ul style="margin-top:0; padding-left:20px;">
+              {% for sym_id in disease.symptoms %}
+                {% for s_ref in data.symptoms %}
+                  {% if s_ref.id == sym_id.id %}
+                    <li>{{ s_ref.label }} 
+                      <span style="font-size:0.8em; color:#64748b;">
+                        (Logic: {{ sym_id.logic }})
+                      </span>
+                    </li>
+                  {% endif %}
+                {% endfor %}
+              {% endfor %}
+            </ul>
+          </div>
+        </div>
+      </td>
+    </tr>
+  {% endfor %}
+</tbody>
 
-                    <!-- Symptoms Column -->
-                    <div class="details-box">
-                      <span class="details-label">Defined Symptoms</span>
-                      <ul style="margin-top:0; padding-left:20px;">
-                        {% for sym_id in disease.symptoms %}
-                          {% for s_ref in data.symptoms %}
-                            {% if s_ref.id == sym_id %}
-                              <li>{{ s_ref.label }}</li>
-                            {% endif %}
-                          {% endfor %}
-                        {% endfor %}
-                      </ul>
-                    </div>
-                  </div>
-                </td>
-              </tr>
-            {% endfor %}
-          </tbody>
         </table>
       </div>
     </div>
