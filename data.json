@@ -204,10 +204,6 @@
       "logic": "AND-OR",
       "symptoms": [
         {
-          "id": "plant_circular_drying",
-          "logic": "AND"
-        },
-        {
           "id": "stem_visible_insects",
           "logic": "AND"
         },
