@@ -362,7 +362,7 @@ def add_disease():
     new_id = name.lower().replace(" ", "_")
 
     logic = request.form.get("logic", "OR").strip().upper()
-    if logic not in ["AND", "OR"]:
+    if logic not in ["AND", "OR", "AND-OR"]:
         logic = "OR"
 
     mgmt_raw = request.form.get("management", "").strip()
@@ -370,6 +370,19 @@ def add_disease():
         management_list = [line.strip() for line in mgmt_raw.splitlines() if line.strip()]
     else:
         management_list = [m.strip() for m in mgmt_raw.split(",") if m.strip()]
+
+    # ✅ NEW: Build symptoms as list of {id, logic}
+    selected_ids = request.form.getlist("symptom_ids")  # from checkboxes
+    symptoms_struct = []
+    for sid in selected_ids:
+        slogic = request.form.get(f"symptom_logic_{sid}", "OR").strip().upper()
+        if slogic not in ["AND", "OR"]:
+            slogic = "OR"
+        symptoms_struct.append({"id": sid, "logic": slogic})
+
+    if not symptoms_struct:
+        flash("Please select at least one symptom.")
+        return redirect(url_for("admin_dashboard"))
 
     new_disease = {
         "id": new_id,
@@ -379,7 +392,7 @@ def add_disease():
         "logic": logic,
         "description": request.form.get("description", "").strip(),
         "management": management_list,
-        "symptoms": request.form.getlist("symptoms"),
+        "symptoms": symptoms_struct,  # ✅ correct structure
     }
 
     data.setdefault("disease", []).append(new_disease)

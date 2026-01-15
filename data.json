@@ -135,11 +135,26 @@
       "severity": "High",
       "logic": "AND-OR",
       "symptoms": [
-        {"id": "leaf_diamond_lesions", "logic": "OR"},
-        {"id": "leaf_gray_center", "logic": "AND"},
-        {"id": "leaf_brown_border", "logic": "AND"},
-        {"id": "panicle_neck_rot", "logic": "OR"},
-        {"id": "plant_burnt_appearance", "logic": "OR"}
+        {
+          "id": "leaf_diamond_lesions",
+          "logic": "OR"
+        },
+        {
+          "id": "leaf_gray_center",
+          "logic": "AND"
+        },
+        {
+          "id": "leaf_brown_border",
+          "logic": "AND"
+        },
+        {
+          "id": "panicle_neck_rot",
+          "logic": "OR"
+        },
+        {
+          "id": "plant_burnt_appearance",
+          "logic": "OR"
+        }
       ],
       "description": "Rice blast is one of the most destructive diseases of rice. It causes lesions on leaves, stems, peduncles, panicles, seeds, and roots.",
       "management": [
@@ -156,10 +171,22 @@
       "severity": "High",
       "logic": "OR",
       "symptoms": [
-        {"id": "leaf_water_soaked_streaks", "logic": "OR"},
-        {"id": "leaf_yellow_orange_margins", "logic": "OR"},
-        {"id": "leaf_milky_ooze", "logic": "OR"},
-        {"id": "leaf_drying_wilt", "logic": "OR"}
+        {
+          "id": "leaf_water_soaked_streaks",
+          "logic": "OR"
+        },
+        {
+          "id": "leaf_yellow_orange_margins",
+          "logic": "OR"
+        },
+        {
+          "id": "leaf_milky_ooze",
+          "logic": "OR"
+        },
+        {
+          "id": "leaf_drying_wilt",
+          "logic": "OR"
+        }
       ],
       "description": "Causes wilting of seedlings (Kresek) and yellowing and drying of leaves. The disease creates lesions that start at the leaf margin.",
       "management": [
@@ -176,10 +203,22 @@
       "severity": "Critical",
       "logic": "AND-OR",
       "symptoms": [
-        {"id": "plant_circular_drying", "logic": "AND"},
-        {"id": "stem_visible_insects", "logic": "AND"},
-        {"id": "plant_hopper_burn", "logic": "OR"},
-        {"id": "plant_sooty_mold", "logic": "OR"}
+        {
+          "id": "plant_circular_drying",
+          "logic": "AND"
+        },
+        {
+          "id": "stem_visible_insects",
+          "logic": "AND"
+        },
+        {
+          "id": "plant_hopper_burn",
+          "logic": "OR"
+        },
+        {
+          "id": "plant_sooty_mold",
+          "logic": "OR"
+        }
       ],
       "description": "Insects suck sap from the base of the rice plant. Severe infestation causes 'hopper burn' where plants turn brown and dry up in circular patches.",
       "management": [
@@ -189,7 +228,6 @@
         "Apply specific insecticides like Buprofezin or Imidacloprid if threshold is crossed."
       ]
     },
-    
     {
       "id": "stem_borer",
       "name": "Stem Borer",
@@ -197,9 +235,18 @@
       "severity": "Medium",
       "logic": "AND-OR",
       "symptoms": [
-        {"id": "stem_dead_heart", "logic": "AND"},
-        {"id": "panicle_white_head", "logic": "OR"},
-        {"id": "stem_holes_frass", "logic": "OR"}
+        {
+          "id": "stem_dead_heart",
+          "logic": "AND"
+        },
+        {
+          "id": "panicle_white_head",
+          "logic": "OR"
+        },
+        {
+          "id": "stem_holes_frass",
+          "logic": "OR"
+        }
       ],
       "description": "Larvae bore into the stem. In the vegetative stage, the central leaf whorl dies (Dead Heart). In the reproductive stage, panicles remain empty and white (White Head).",
       "management": [
@@ -216,9 +263,18 @@
       "severity": "Medium",
       "logic": "AND-OR",
       "symptoms": [
-        {"id": "stem_snake_skin_lesions", "logic": "OR"},
-        {"id": "stem_irregular_spots", "logic": "AND"},
-        {"id": "leaf_banding_pattern", "logic": "OR"}
+        {
+          "id": "stem_snake_skin_lesions",
+          "logic": "OR"
+        },
+        {
+          "id": "stem_irregular_spots",
+          "logic": "AND"
+        },
+        {
+          "id": "leaf_banding_pattern",
+          "logic": "OR"
+        }
       ],
       "description": "Characterized by oval or irregular greenish-grey spots with a distinct dark brown margin, often resembling a snake skin pattern on the leaf sheath.",
       "management": [
@@ -235,9 +291,18 @@
       "severity": "Low",
       "logic": "AND-OR",
       "symptoms": [
-        {"id": "leaf_general_yellowing", "logic": "AND"},
-        {"id": "plant_stunted_growth", "logic": "AND"},
-        {"id": "leaf_small_erect", "logic": "OR"}
+        {
+          "id": "leaf_general_yellowing",
+          "logic": "AND"
+        },
+        {
+          "id": "plant_stunted_growth",
+          "logic": "AND"
+        },
+        {
+          "id": "leaf_small_erect",
+          "logic": "OR"
+        }
       ],
       "description": "Older leaves turn yellowish-green to yellow. The whole field may appear yellowish. Growth is stunted and tillering is reduced.",
       "management": [
@@ -253,10 +318,22 @@
       "severity": "High",
       "logic": "OR",
       "symptoms": [
-        {"id": "plant_stunted_growth", "logic": "OR"},
-        {"id": "leaf_yellow_orange_discoloration", "logic": "AND"},
-        {"id": "leaf_twisted_tips", "logic": "OR"},
-        {"id": "plant_reduced_tillering", "logic": "OR"}
+        {
+          "id": "plant_stunted_growth",
+          "logic": "OR"
+        },
+        {
+          "id": "leaf_yellow_orange_discoloration",
+          "logic": "AND"
+        },
+        {
+          "id": "leaf_twisted_tips",
+          "logic": "OR"
+        },
+        {
+          "id": "plant_reduced_tillering",
+          "logic": "OR"
+        }
       ],
       "description": "Transmitted by Green Leafhoppers. Plants display stunting and distinct yellow to orange-red leaf discoloration.",
       "management": [
@@ -265,7 +342,27 @@
         "Practice synchronous planting in the community.",
         "Use resistant varieties."
       ]
+    },
+    {
+      "id": "ss",
+      "name": "ss",
+      "type": "Fungal Disease",
+      "severity": "Low",
+      "logic": "OR",
+      "description": "ss",
+      "management": [
+        "ss"
+      ],
+      "symptoms": [
+        {
+          "id": "leaf_diamond_lesions",
+          "logic": "OR"
+        },
+        {
+          "id": "leaf_gray_center",
+          "logic": "AND"
+        }
+      ]
     }
-
   ]
 }

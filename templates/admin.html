@@ -68,12 +68,35 @@
                 style="margin-top:12px;"
                 required></textarea>
 
-      <select class="input-field" name="symptoms" multiple
-              style="margin-top:12px; height:150px;" required>
-        {% for s in data.symptoms %}
-          <option value="{{ s.id }}">{{ s.label }}</option>
-        {% endfor %}
-      </select>
+    <!-- Symptoms + Logic (per symptom) -->
+<div style="margin-top:12px;">
+  <label style="font-weight:800; display:block; margin-bottom:8px;">
+    Select Symptoms + Logic
+  </label>
+
+  <div style="display:grid; grid-template-columns:1fr; gap:10px; max-height:260px; overflow:auto; padding:10px; border:1px solid #e2e8f0; border-radius:12px; background:#fff;">
+    {% for s in data.symptoms %}
+      <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; border:1px solid #f1f5f9; padding:10px; border-radius:12px;">
+        
+        <label style="display:flex; align-items:center; gap:10px; margin:0;">
+          <input type="checkbox" name="symptom_ids" value="{{ s.id }}">
+          <span>{{ s.label }} <span style="color:#64748b;">({{ s.id }})</span></span>
+        </label>
+
+        <select class="input-field" name="symptom_logic_{{ s.id }}" style="max-width:110px;">
+          <option value="OR" selected>OR</option>
+          <option value="AND">AND</option>
+        </select>
+
+      </div>
+    {% endfor %}
+  </div>
+
+  <p style="margin:8px 0 0; color:#64748b; font-size:0.9rem;">
+    Tick the symptoms used in the rule, and choose OR/AND for each.
+  </p>
+</div>
+
 
       <button class="btn-analyze" style="margin-top:16px;">Save Disease</button>
     </form>
